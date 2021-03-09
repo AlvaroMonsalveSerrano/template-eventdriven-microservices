@@ -1,5 +1,201 @@
 # Template-eventdriven-microservices
 
+## Introduction
+
+Project example in Python language of an Event-Driven architecture. The producer / consumer broker is used provided by Redis.
+
+All the code defined in the project aims to describe the elements necessary for an architecture event-driven with a didactic ending.
+
+
+## Work environment creation
+
+### Project
+
+    1.- Creation of the project folder.
+    2.- Creation of the virtual environment.
+      2.1.- Creation of the environment: $> virtualenv -p python3.6 .venv
+      2.2.- Activate the environment: $> source .venv / bin / activate
+      2.3.- To deactivate the environment: $> deactivate
+    
+      The virtual environment is installed in the project's .venv folder.
+    
+    3.- Installing the dependencies: $> pip install -r requirements.txt
+
+### Redis
+
+For the Redis installation we will use a Docker container. The steps to follow are those:
+
+1.- Download the Redis image.
+
+```
+docker pull redis
+```
+
+2.- Starting the image.
+
+```
+docker container run --name some-redis -d redis
+```
+
+
+## Test
+
++ Execution of unit tests locally:
+
+```
+pytest --setup-show ./tests/unit
+```
+
++ Execution of unit tests in Docker.
+
+```
+make unit-tests
+```
+
++ Execution of integration tests with Redis. A docker compose is defined with the different containers needed to
+perform the integration tests. To run the integration tests, run the following:
+
+```
+make integration-tests
+```
+
+## Run
+
+### Local
+
+To start the application locally, it is necessary to have the Docker container running as mentioned in the
+previous section. In addition, it is necessary to define the following environment variables: ** ENV ** variable, to define the
+runtime environment; and, variable REDIS_HOST, to define the IP of the Redis container.
+
+```
+cd entrypoints
+export ENV = local
+expot REDIS_HOST = 172.17.0.2
+export FLASK_APP = app.py
+flask run
+```
+
+To boot from an IDE like PyCharm, it is only necessary to define the ENV and REDIS_HOST variables.
+
+
+To test the endpoints, if the application is raised in a local environment on port 5000, the
+following curl commands:
+
+```
+curl http: // localhost: 5000 /
+curl http: // localhost: 5000 / readiness
+curl http: // localhost: 5000 / liveness
+curl --header "Content-Type: application / json" --request POST \
+     --data '{"name": "xyz1", "operation": "+", "operator": "20"}' \
+     http: // localhost: 5000 / use_case_example
+```
+
+### Docker
+
+A docker compose is defined with three services:
+
++ **redis.-** Service with the Redis broker.
++ **api.-** Service with the application installed.
++ **consumer_redis.-** Service with the consumer of the Redis broker.
+
+To start operations with Docker, a Makefile is defined with the basic Docker operations:
+
++ **build** Operation for the creation of the Docker image
+
+```
+docker-compose build
+
+> make build
+```
+
++ **up** Operation to start services.
+```
+docker-compose up -d
+
+> make up
+```
+
+
++ **test.-** Operation for the execution of the tests.
+
+```
+docker-compose run --rm --no-deps --entrypoint = pytest api / app / tests / unit / app / tests / integration / app / tests / e2e
+
+> make test
+```
+
+
++ **unit-tests.-** Operation for the execution of unit tests.
+ 
+```
+docker-compose run --rm --no-deps --entrypoint = pytest api / app / tests / unit
+
+> make unit-tests
+```
+
+
++ **integration-tests.-** Operation for the execution of integration tests.
+ 
+```
+docker-compose run --rm --no-deps --entrypoint = pytest api / app / tests / integration
+
+> make integration-tests
+```
+
+
++ **e2e-tests.-** Operation for the execution of end to end tests. Not defined.
+
+```
+docker-compose run --rm --no-deps --entrypoint = pytest api / app / tests / e2e
+
+> make e2e-tests
+```
+
+
++ **logs.-** Operation to display the logs of the redis service.
+
+```
+docker-compose logs --tail = 25 api redis
+
+> make logs
+```
+
+
++ **down.-** Operation for the elimination of services.
+
+```
+docker-compose down --remove-orphans
+
+> make down
+```
+
+
++ **all.-** Operation that performs the following: elimination of services, creation of images and startup of
+services, that is, it is the union of the following operations: down, build and up.
+ 
+```
+down build up
+
+> make all
+```
+ 
+To test the endpoints of the application started in the container, the following curl commands can be used:
+
+#### Test curl examples
+
+```
+curl http: // localhost: 6060 /
+curl http: // localhost: 6060 / liveness
+curl http: // localhost: 6060 / rediness
+curl --header "Content-Type: application / json" --request POST \
+     --data '{"name": "xyz1", "operation": "+", "operator": "20"}' \
+     http: // localhost: 6060 / use_case_example_cmd
+```
+
+---
+
+# Template-eventdriven-microservices
+
 ## Introducción
 
 Ejemplo de proyecto en lenguaje Python de una arquitectura Event-Driven. Se utiliza como broker productor/consumidor el
