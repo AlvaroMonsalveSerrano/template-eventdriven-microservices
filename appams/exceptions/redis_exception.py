@@ -1,0 +1,3 @@
+
+class RedisConsumerException(Exception):
+    pass

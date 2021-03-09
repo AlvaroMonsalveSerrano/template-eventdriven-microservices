@@ -1,0 +1,57 @@
+version: '3'
+
+services:
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    ports:
+      - "63791:6379"
+    networks:
+      -  redisnetwork
+
+  api:
+    depends_on:
+      - redis
+    container_name: api
+    build: ./
+    environment:
+      - ENV_VAR=valueTestOK
+      - ENV=docker
+      - FLASK_APP=appams/entrypoints/app.py
+      - FLASK_DEBUG=1
+      - PYTHONUNBUFFERED=1
+    entrypoint:
+      - flask
+      - run
+      - --host=0.0.0.0
+      - --port=80
+    networks:
+      - appredisnetwork
+      - redisnetwork
+    ports:
+      - "5005:80"
+
+  consumer_redis:
+    depends_on:
+      - redis
+    container_name: redis_consumer
+    build: ./
+    environment:
+      - ENV_VAR=valueTestOK
+      - ENV=docker
+    entrypoint:
+      - python3.8
+      - appams/consumer/redis_consumer.py
+    networks:
+      - appredisnetwork
+      - redisnetwork
+
+
+networks:
+  appredisnetwork:
+    driver_opts:
+      com.docker.network.bridge.name: appredisnetwork
+  redisnetwork:
+    driver_opts:
+      com.docker.network.bridge.name: redisnetwork

@@ -1,0 +1,8 @@
+boto3
+dataclasses
+Flask
+pytest
+pytest-icdiff
+mypy
+pylint
+redis

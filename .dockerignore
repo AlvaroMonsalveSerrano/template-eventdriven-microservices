@@ -1,0 +1,11 @@
+Makefile
+.gitignore
+docker-compose.yml
+.venv
+.pytest_cache
+README.md
+Dockerfile
+.pyc
+__pycache__
+__pycache__/*
+./__pycache__
